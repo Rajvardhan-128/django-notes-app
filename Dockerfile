@@ -30,25 +30,20 @@
 
 FROM python:3.9
 
-# Set working directory
 WORKDIR /app/backend
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    gcc \
-    default-libmysqlclient-dev \
-    pkg-config \
+COPY requirements.txt /app/backend
+
+# Install system dependencies for mysqlclient
+RUN apt-get update \
+    && apt-get install -y gcc default-libmysqlclient-dev libmariadb-dev pkg-config \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies
-COPY requirements.txt /app/backend
+# Install python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy project files
 COPY . /app/backend
 
-# Expose app port
 EXPOSE 8000
 
-# Run Django on container start
-CMD ["python3", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["python3", "/app/backend/manage.py", "runserver", "0.0.0.0:8000"]
